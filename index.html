@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BookPick">
+<title>BookPick</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F1EB;
+    --card: #FFFFFF;
+    --ink: #2C2420;
+    --ink-soft: #8A7E76;
+    --accent: #D4652E;
+    --accent-glow: #F0854E;
+    --green: #4A8C5C;
+    --green-soft: #E8F2EB;
+    --border: #E8E0D8;
+    --shadow: rgba(44, 36, 32, 0.08);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) 0 0 0;
+    overflow-x: hidden;
+  }
+
+  .header {
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+  }
+
+  .header .stats {
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .action-bar {
+    padding: 0 24px 16px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .btn:active { transform: scale(0.96); }
+
+  .btn-random {
+    background: var(--accent);
+    color: white;
+    box-shadow: 0 4px 16px rgba(212, 101, 46, 0.3);
+  }
+
+  .btn-random:active { background: var(--accent-glow); }
+
+  .btn-add {
+    background: var(--card);
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-add:active { background: var(--bg); }
+
+  .btn-icon { font-size: 18px; }
+
+  .filter-bar {
+    padding: 0 24px 12px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink-soft);
+    transition: all 0.2s;
+  }
+
+  .filter-tab.active {
+    background: var(--ink);
+    color: white;
+  }
+
+  .book-list {
+    padding: 0 24px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .book-item {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.3s ease forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .book-item.read { opacity: 0.6; }
+
+  .book-item.picked {
+    border: 2px solid var(--accent);
+    box-shadow: 0 4px 20px rgba(212, 101, 46, 0.15);
+  }
+
+  .check-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    font-size: 14px;
+    color: transparent;
+  }
+
+  .check-btn.checked {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+
+  .book-info { flex: 1; min-width: 0; }
+
+  .book-title {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .book-item.read .book-title {
+    text-decoration: line-through;
+    color: var(--ink-soft);
+  }
+
+  .delete-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .delete-btn:active { opacity: 1; color: #c0392b; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--ink-soft);
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+
+  .empty-state p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 24px calc(24px + env(safe-area-inset-bottom));
+    width: 100%;
+    max-width: 500px;
+    max-height: 80dvh;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .modal-overlay.show .modal {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+
+  .modal-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 3px;
+  }
+
+  .modal-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    color: var(--ink-soft);
+    transition: all 0.2s;
+  }
+
+  .modal-tab.active {
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 0 1px 4px var(--shadow);
+  }
+
+  .input-single {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    outline: none;
+    background: var(--bg);
+    transition: border-color 0.2s;
+    color: var(--ink);
+  }
+
+  .input-single:focus { border-color: var(--accent); }
+
+  .input-multi {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    outline: none;
+    background: var(--bg);
+    resize: none;
+    height: 180px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .input-multi:focus { border-color: var(--accent); }
+
+  .input-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  .modal-submit {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--ink);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+  }
+
+  .modal-submit:active { transform: scale(0.98); opacity: 0.9; }
+
+  .pick-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .pick-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .pick-card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 320px;
+    width: calc(100% - 48px);
+    transform: scale(0.8);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .pick-overlay.show .pick-card {
+    transform: scale(1);
+  }
+
+  .pick-card .dice { font-size: 48px; margin-bottom: 16px; }
+
+  .pick-card .label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .pick-card .title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    line-height: 1.3;
+    margin-bottom: 28px;
+    color: var(--ink);
+  }
+
+  .pick-card .dismiss {
+    padding: 14px 40px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pick-card .dismiss:active { opacity: 0.9; }
+
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 300;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📚 BookPick</h1>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-random" onclick="pickRandom()">
+    <span class="btn-icon">🎲</span> Random
+  </button>
+  <button class="btn btn-add" onclick="openModal()">
+    <span class="btn-icon">+</span> Agregar
+  </button>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-tab active" data-filter="all" onclick="setFilter('all', this)">Todos</button>
+  <button class="filter-tab" data-filter="unread" onclick="setFilter('unread', this)">Sin leer</button>
+  <button class="filter-tab" data-filter="read" onclick="setFilter('read', this)">Leídos</button>
+</div>
+
+<div class="book-list" id="bookList"></div>
+
+<div class="modal-overlay" id="addModal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Agregar libros</h2>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="setAddMode('single', this)">Individual</button>
+      <button class="modal-tab" onclick="setAddMode('bulk', this)">Lista</button>
+    </div>
+    <div id="addSingle">
+      <input class="input-single" id="singleInput" type="text" placeholder="Autor – Título del libro" autocomplete="off" onkeydown="if(event.key==='Enter')addBooks()">
+    </div>
+    <div id="addBulk" style="display:none">
+      <textarea class="input-multi" id="bulkInput" placeholder="Un libro por línea:&#10;Carl Sagan – Cosmos&#10;George Orwell – 1984"></textarea>
+      <div class="input-hint">Escribí un libro por línea (Autor – Título)</div>
+    </div>
+    <button class="modal-submit" onclick="addBooks()">Agregar</button>
+  </div>
+</div>
+
+<div class="pick-overlay" id="pickOverlay" onclick="closePick()">
+  <div class="pick-card" onclick="event.stopPropagation()">
+    <div class="dice">🎲</div>
+    <div class="label">Tu próximo libro</div>
+    <div class="title" id="pickTitle"></div>
+    <button class="dismiss" onclick="closePick()">¡Dale!</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const DEFAULT_BOOKS = [
+    "Agatha Christie – And Then There Were None",
+    "Albert Camus – The Stranger",
+    "Aldous Huxley – Brave New World",
+    "Alex Michaelides – The Silent Patient",
+    "Alexandre Dumas – The Count of Monte Cristo",
+    "Annie Duke – Thinking in Bets",
+    "Benjamin Graham – The Intelligent Investor",
+    "Bill Bryson – A Short History of Nearly Everything",
+    "Brian Greene – The Elegant Universe",
+    "Burton Malkiel – A Random Walk Down Wall Street",
+    "Carl Sagan – Cosmos",
+    "Carl Sagan – Pale Blue Dot",
+    "Carlo Rovelli – Seven Brief Lessons on Physics",
+    "Carlo Rovelli – The Order of Time",
+    "Charles C. Mann – 1491",
+    "Charlie Munger – Poor Charlie's Almanack",
+    "Chris Voss – Never Split the Difference",
+    "Cormac McCarthy – No Country for Old Men",
+    "Dan Ariely – Predictably Irrational",
+    "Daniel Kahneman – Thinking, Fast and Slow",
+    "Davidson & Rees-Mogg – The Sovereign Individual",
+    "Dennis Lehane – Shutter Island",
+    "Eric Jorgenson – The Almanack of Naval Ravikant",
+    "Ernest Hemingway – The Old Man and the Sea",
+    "Friedrich Nietzsche – Thus Spoke Zarathustra",
+    "Fyodor Dostoevsky – Crime and Punishment",
+    "George Orwell – 1984",
+    "George Orwell – Animal Farm",
+    "Gillian Flynn – Gone Girl",
+    "Gillian Flynn – Sharp Objects",
+    "Guy Consolmagno – Turn Left at Orion",
+    "Hermann Hesse – Siddhartha",
+    "Jared Diamond – Guns, Germs, and Steel",
+    "Maquiavelo – The Prince",
+    "Marco Aurelio – Meditations",
+    "Mary Beard – SPQR: A History of Ancient Rome",
+    "Miguel de Cervantes – Don Quixote",
+    "Morgan Housel – The Psychology of Money",
+    "Nassim Taleb – Skin in the Game",
+    "Nassim Taleb – The Black Swan",
+    "Neil deGrasse Tyson – Astrophysics for People in a Hurry",
+    "Nik Bhatia – Layered Money",
+    "Patricia Highsmith – The Talented Mr. Ripley",
+    "Paulo Coelho – The Alchemist",
+    "Peter Frankopan – The Silk Roads",
+    "Peter Lynch – One Up on Wall Street",
+    "Platón – The Republic",
+    "Ray Bradbury – Fahrenheit 451",
+    "Ray Dalio – The Changing World Order",
+    "Robert Cialdini – Influence",
+    "Robert Greene – The 48 Laws of Power",
+    "Robert Greene – The Laws of Human Nature",
+    "Robert Kiyosaki – Rich Dad Poor Dad",
+    "Ryan Holiday – The Obstacle is the Way",
+    "S.J. Watson – Before I Go to Sleep",
+    "Saifedean Ammous – The Bitcoin Standard",
+    "Saifedean Ammous – The Fiat Standard",
+    "Stephen Hawking – Brief Answers to the Big Questions",
+    "Stieg Larsson – The Girl with the Dragon Tattoo",
+    "Sun Tzu – The Art of War",
+    "Séneca – Letters from a Stoic",
+    "Terence Dickinson – NightWatch",
+    "Thomas Harris – The Silence of the Lambs",
+    "Viktor Frankl – Man's Search for Meaning",
+    "William Shirer – The Rise and Fall of the Third Reich",
+    "Yuval Noah Harari – Sapiens"
+  ];
+
+  function genId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  let books;
+  const stored = localStorage.getItem('bookpick_books');
+  if (stored) {
+    books = JSON.parse(stored);
+  } else {
+    books = DEFAULT_BOOKS.map(title => ({
+      id: genId(),
+      title: title,
+      read: false
+    }));
+    localStorage.setItem('bookpick_books', JSON.stringify(books));
+  }
+
+  let currentFilter = 'all';
+  let addMode = 'single';
+  let pickedId = null;
+
+  function save() {
+    localStorage.setItem('bookpick_books', JSON.stringify(books));
+  }
+
+  function sortBooks() {
+    books.sort((a, b) => a.title.localeCompare(b.title, 'es'));
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function updateStats() {
+    const total = books.length;
+    const read = books.filter(b => b.read).length;
+    document.getElementById('stats').textContent = total ? `${read}/${total} leídos` : '';
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function render() {
+    const list = document.getElementById('bookList');
+    let filtered = books;
+    if (currentFilter === 'read') filtered = books.filter(b => b.read);
+    if (currentFilter === 'unread') filtered = books.filter(b => !b.read);
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">${currentFilter === 'all' ? '📖' : currentFilter === 'read' ? '✅' : '📋'}</div>
+          <p>${currentFilter === 'all' ? 'No tenés libros todavía.<br>¡Agregá algunos!' : currentFilter === 'read' ? 'No leíste ningún libro aún.' : 'No hay libros sin leer. ¡Agregá más!'}</p>
+        </div>`;
+      updateStats();
+      return;
+    }
+
+    list.innerHTML = filtered.map((book, i) => `
+      <div class="book-item ${book.read ? 'read' : ''} ${book.id === pickedId ? 'picked' : ''}" style="animation-delay: ${i * 0.02}s">
+        <button class="check-btn ${book.read ? 'checked' : ''}" onclick="toggleRead('${book.id}')">
+          ${book.read ? '✓' : ''}
+        </button>
+        <div class="book-info">
+          <div class="book-title">${escapeHtml(book.title)}</div>
+        </div>
+        <button class="delete-btn" onclick="deleteBook('${book.id}')">✕</button>
+      </div>
+    `).join('');
+    updateStats();
+  }
+
+  function toggleRead(id) {
+    const book = books.find(b => b.id === id);
+    if (book) {
+      book.read = !book.read;
+      save();
+      render();
+    }
+  }
+
+  function deleteBook(id) {
+    if (confirm('¿Eliminar este libro?')) {
+      books = books.filter(b => b.id !== id);
+      save();
+      render();
+    }
+  }
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    render();
+  }
+
+  function pickRandom() {
+    const unread = books.filter(b => !b.read);
+    if (unread.length === 0) {
+      showToast('No hay libros sin leer 🎉');
+      return;
+    }
+    const pick = unread[Math.floor(Math.random() * unread.length)];
+    pickedId = pick.id;
+    document.getElementById('pickTitle').textContent = pick.title;
+    document.getElementById('pickOverlay').classList.add('show');
+    render();
+  }
+
+  function closePick() {
+    document.getElementById('pickOverlay').classList.remove('show');
+    setTimeout(() => { pickedId = null; render(); }, 300);
+  }
+
+  function openModal() {
+    document.getElementById('addModal').classList.add('show');
+    setTimeout(() => {
+      if (addMode === 'single') document.getElementById('singleInput').focus();
+      else document.getElementById('bulkInput').focus();
+    }, 350);
+  }
+
+  function closeModal() {
+    document.getElementById('addModal').classList.remove('show');
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('addModal')) closeModal();
+  }
+
+  function setAddMode(mode, el) {
+    addMode = mode;
+    document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('addSingle').style.display = mode === 'single' ? 'block' : 'none';
+    document.getElementById('addBulk').style.display = mode === 'bulk' ? 'block' : 'none';
+  }
+
+  function addBooks() {
+    let titles = [];
+    if (addMode === 'single') {
+      const val = document.getElementById('singleInput').value.trim();
+      if (val) titles = [val];
+      document.getElementById('singleInput').value = '';
+    } else {
+      const val = document.getElementById('bulkInput').value;
+      titles = val.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      document.getElementById('bulkInput').value = '';
+    }
+
+    if (titles.length === 0) {
+      showToast('Escribí al menos un título');
+      return;
+    }
+
+    const existing = new Set(books.map(b => b.title.toLowerCase()));
+    let added = 0;
+    titles.forEach(t => {
+      if (!existing.has(t.toLowerCase())) {
+        books.push({ id: genId(), title: t, read: false });
+        existing.add(t.toLowerCase());
+        added++;
+      }
+    });
+
+    sortBooks();
+    save();
+    render();
+    closeModal();
+    if (added > 0) {
+      showToast(added === 1 ? 'Libro agregado ✓' : `${added} libros agregados ✓`);
+    } else {
+      showToast('Ya tenés esos libros');
+    }
+  }
+
+  sortBooks();
+  render();
+</script>
+
+</body>
+</html>
