@@ -57,7 +57,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 .fab:active{transform:scale(.92)}
 
 /* HEADER */
-.hero{padding:calc(max(env(safe-area-inset-top), 24px) + 20px) 24px 0;position:relative}
+.hero{padding:calc(max(env(safe-area-inset-top), 54px) + 16px) 24px 0;position:relative}
 .hero-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse,rgba(232,160,76,.06) 0%,transparent 70%);pointer-events:none}
 .hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .logo{display:flex;align-items:center;gap:10px}
@@ -157,8 +157,8 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 .search-clear{width:22px;height:22px;border-radius:50%;border:none;background:var(--surface);color:var(--ink3);font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
 .search-clear.show{display:flex}
 
-.controls-row{padding:0 24px 10px;display:flex;align-items:center;justify-content:space-between}
-.filters{display:flex;gap:5px}
+.controls-row{padding:0 24px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
 .fchip{padding:6px 12px;border-radius:18px;border:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--ink3);transition:all .2s}
 .fchip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
 .sort-btn{padding:6px 10px;border-radius:18px;border:1px solid var(--border);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--ink3)}
@@ -1221,8 +1221,8 @@ function openDetail(id){
         <input type="text" id="editAuthorIn" value="${esc(a)}" style="font-size:14px;color:var(--ink2);margin-bottom:8px;background:transparent;border:none;width:100%;border-bottom:1px dashed transparent;outline:none" onblur="updateBookData('${id}')">
         <div style="display:flex; align-items:center; gap:8px">
           <span class="detail-tag ${ci.css}">${ci.emoji} ${ci.label}</span>
-          <span class="detail-tag" style="background:var(--surface);color:var(--ink3);display:flex;align-items:center;gap:4px">
-            📑 <input type="number" id="editPagesIn" value="${b.pages||0}" style="width:40px;background:transparent;border:none;color:var(--ink3);font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;outline:none" onblur="updateBookData('${id}')"> págs
+          <span class="detail-tag" style="background:var(--surface);color:var(--ink);display:flex;align-items:center;gap:4px;font-size:11px">
+            📑 <b style="color:var(--accent)">${b.pages||0}</b> págs
           </span>
         </div>
       </div>
@@ -1275,9 +1275,7 @@ function updateBookData(id){
   const b=books.find(x=>x.id===id);if(!b)return;
   const t = document.getElementById('editTitleIn').value.trim();
   const a = document.getElementById('editAuthorIn').value.trim();
-  const p = parseInt(document.getElementById('editPagesIn').value) || 0;
   b.title = a ? `${a} – ${t}` : t;
-  b.pages = p;
   save(); renderAll();
 }
 
