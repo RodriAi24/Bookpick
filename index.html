@@ -32,10 +32,11 @@ body[data-theme="light"]{
 }
 body[data-theme="light"]::before{opacity:.04}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 ::-webkit-scrollbar{width:0;display:none}
-.app{max-width:500px;margin:0 auto;padding:0 0 calc(140px + env(safe-area-inset-bottom)) 0;min-height:100dvh}
+.ios-statusbar { position: fixed; top: 0; left: 0; right: 0; height: max(env(safe-area-inset-top), 45px); background: var(--bg); z-index: 9999; transition: background 0.3s; }
+.app{max-width:500px;margin:0 auto;padding:max(env(safe-area-inset-top), 45px) 0 calc(140px + env(safe-area-inset-bottom)) 0;min-height:100dvh}
 
 /* GRID VIEW */
 .blist.grid-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0 24px; }
@@ -57,7 +58,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 .fab:active{transform:scale(.92)}
 
 /* HEADER */
-.hero{padding:calc(env(safe-area-inset-top, 40px) + 20px) 24px 0;position:relative}
+.hero{padding:20px 24px 0;position:relative}
 .hero-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse,rgba(232,160,76,.06) 0%,transparent 70%);pointer-events:none}
 .hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .logo{display:flex;align-items:center;gap:10px}
@@ -85,7 +86,8 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 
 /* STATS ROW */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center;position:relative;overflow:hidden}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center;position:relative;overflow:hidden;cursor:pointer;transition:transform .2s}
+.stat-card:active{transform:scale(.95)}
 .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .stat-card:nth-child(1)::after{background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 .stat-card:nth-child(2)::after{background:linear-gradient(90deg,transparent,var(--green),transparent)}
@@ -215,6 +217,17 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 .empty-icon{font-size:44px;margin-bottom:14px;opacity:.6}
 .empty-text{font-size:14px;color:var(--ink3);line-height:1.6}
 
+/* NOTES FEED */
+.feed-card { background: var(--card2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: transform 0.2s; }
+.feed-card:active { transform: scale(0.97); }
+.feed-header { display: flex; gap: 12px; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 12px; }
+.feed-cover { width: 36px; height: 54px; border-radius: 4px; object-fit: cover; background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.feed-meta { flex: 1; min-width: 0; }
+.feed-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.feed-author { font-size: 12px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.feed-text { font-size: 14px; color: var(--ink2); line-height: 1.6; font-style: italic; white-space: pre-wrap; margin-top: 4px; }
+.feed-text::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 24px; color: var(--accent); line-height: 0; vertical-align: bottom; margin-right: 4px; }
+
 /* SHEETS / MODALS */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
 .overlay.open{opacity:1;pointer-events:all}
@@ -331,6 +344,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 </style>
 </head>
 <body>
+<div class="ios-statusbar"></div>
 <div class="app">
   <!-- NAV -->
   <div class="page active" id="page-home">
@@ -345,9 +359,9 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
       <div class="current-section" id="currentSection"></div>
 
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-num" id="sT">0</div><div class="stat-lbl">Total</div></div>
-        <div class="stat-card"><div class="stat-num" id="sR">0</div><div class="stat-lbl">Leídos</div></div>
-        <div class="stat-card"><div class="stat-num" id="sU">0</div><div class="stat-lbl">Pendientes</div></div>
+        <div class="stat-card" onclick="goToLibraryFilter('all')"><div class="stat-num" id="sT">0</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-card" onclick="goToLibraryFilter('read')"><div class="stat-num" id="sR">0</div><div class="stat-lbl">Leídos</div></div>
+        <div class="stat-card" onclick="goToLibraryFilter('unread')"><div class="stat-num" id="sU">0</div><div class="stat-lbl">Pendientes</div></div>
       </div>
 
       <div style="background:var(--card); border-radius:var(--radius); padding:24px; margin-bottom:24px; text-align:center;">
@@ -377,7 +391,10 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
         <button id="viewWishBtn" onclick="setView('wishlist')" style="flex:1;padding:10px;border:none;border-radius:var(--rxs);background:transparent;color:var(--ink3);font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s">Wishlist</button>
       </div>
       
-      <button class="sbtn" style="margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px; box-shadow:0 8px 24px rgba(232,160,76,.25)" onclick="pickRandom()"><span>🎲</span> Random Pick</button>
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button class="sbtn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px; box-shadow:0 8px 24px rgba(232,160,76,.25)" onclick="pickRandom()"><span>🎲</span> Al azar</button>
+        <button class="sbtn secondary" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; font-size:14px; border-color:var(--border);" onclick="openNotesFeed()"><span>📝</span> Mis Notas</button>
+      </div>
     </div>
 
     <div class="search-section">
@@ -444,7 +461,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
         <button class="sbtn secondary" id="syncBtn" onclick="syncOldBooks()">🔄 Sincronizar libros antiguos</button>
       </div>
       <div style="margin-top:16px">
-        <p style="font-size:13px;color:var(--ink3);margin-bottom:14px">Reiniciar vuelve a los 66 libros originales y borra todo tu progreso.</p>
+        <p style="font-size:13px;color:var(--ink3);margin-bottom:14px">Borra todos tus libros, notas y estadísticas para arrancar con la app limpia desde cero.</p>
         <button class="sbtn danger" onclick="resetLib()">Reiniciar biblioteca</button>
       </div>
       <div style="margin-top:16px; display:flex; gap:10px; flex-direction:column;">
@@ -504,6 +521,14 @@ body::before{content:'';position:fixed;inset:0;opacity:.02;background-image:url(
 <div class="sheet" id="detSh">
   <div class="sheet-handle"></div>
   <div id="detContent"></div>
+</div>
+
+<div class="overlay" id="notesOv" onclick="closeNotesFeed()"></div>
+<div class="sheet" id="notesSh" style="max-height:85dvh; height:85dvh; display:flex; flex-direction:column; padding-bottom:env(safe-area-inset-bottom)">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title" style="margin-bottom:4px">Diario de Lectura</div>
+  <div style="font-size:13px; color:var(--ink3); margin-bottom:20px;">Tus ideas y frases destacadas</div>
+  <div id="notesFeedContent" style="flex:1; overflow-y:auto; padding-bottom:20px; display:flex; flex-direction:column; gap:16px;"></div>
 </div>
 
 <!-- PICK MODAL -->
@@ -598,6 +623,9 @@ function showPage(p){
   document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
   document.getElementById('tab-'+p).classList.add('active');
   
+  const fab = document.querySelector('.fab');
+  if(fab) fab.style.display = (p === 'home' || p === 'library') ? 'flex' : 'none';
+
   if(p==='home') { renderHome(); }
   if(p==='library') { renderLibrary(); }
   if(p==='stats') { renderStats(); }
@@ -615,7 +643,7 @@ function setView(v){
 }
 
 // ═══ RENDERING ═══
-let sq='',addM='single',selC='',pickId=null;
+let sq='',addM='magic',selC='',pickId=null;
 
 function renderAll() {
   renderHome();
@@ -771,7 +799,10 @@ function renderMiniStats(){
 }
 
 function renderCats(){
-  const cc={};books.forEach(b=>{cc[b.cat]=(cc[b.cat]||0)+1});
+  const isW = state.view === 'wishlist';
+  const cc={};
+  books.filter(b => !!b.wishlist === isW).forEach(b=>{cc[b.cat]=(cc[b.cat]||0)+1});
+  
   const el=document.getElementById('catScroll');
   let h=`<button class="cchip ${state.catFilter==='all'?'active':''}" onclick="setCat('all')">Todas</button>`;
   CATS.forEach(c=>{if(cc[c.id])h+=`<button class="cchip ${state.catFilter===c.id?'active':''}" onclick="setCat('${c.id}')">${c.emoji} ${c.label}<span class="cbadge">${cc[c.id]}</span></button>`});
@@ -781,7 +812,6 @@ function renderCats(){
     if(e)e.innerHTML=CATS.map(c=>`<button class="cat-opt" onclick="selCatFn('${c.id}',this)">${c.emoji} ${c.label}</button>`).join('');
   });
 }
-
 function getFiltered(){
   const isW = state.view === 'wishlist';
   let l=books.filter(b => !!b.wishlist === isW);
@@ -944,8 +974,8 @@ function toggleRead(id){
   if(b.read){b.readDate=today();b.progress=100;}
   else{b.readDate=null}
   save();renderAll();
+  toast(b.read ? 'Marcado como leído ✅' : 'Marcado como pendiente 📖');
 }
-
 function del(id){
   if(!confirm('¿Eliminar este libro?'))return;
   books=books.filter(x=>x.id!==id);save();renderAll();
@@ -984,6 +1014,23 @@ function stopReading(id){
 function updateStartDate(id, dateStr) {
   const b = books.find(x => x.id === id);
   if (b) { b.startDate = dateStr; save(); toast('Fecha actualizada'); }
+}
+
+function updateReadDate(id, dateStr) {
+  const b = books.find(x => x.id === id);
+  if (b) { b.readDate = dateStr; save(); renderAll(); toast('Fecha de lectura actualizada'); }
+}
+
+function goToLibraryFilter(f){
+  setView('library');
+  state.filter=f; saveState();
+  document.querySelectorAll('.fchip').forEach(c=>{
+    if(c.textContent==='Todos'&&f==='all') c.classList.add('active');
+    else if(c.textContent==='Pendientes'&&f==='unread') c.classList.add('active');
+    else if(c.textContent==='Leídos'&&f==='read') c.classList.add('active');
+    else c.classList.remove('active');
+  });
+  showPage('library');
 }
 
 function updateProgressValue(id, val) {
@@ -1044,6 +1091,43 @@ function startReading(){
 
 function closePick(){document.getElementById('pickOv').classList.remove('show');setTimeout(()=>{pickId=null;renderBookList()},300)}
 document.getElementById('pickOv').addEventListener('click',e=>{if(e.target===document.getElementById('pickOv'))closePick()});
+
+// ═══ NOTES FEED ═══
+function openNotesFeed() {
+  const notesBooks = books.filter(b => b.notes && b.notes.trim().length > 0);
+  notesBooks.sort((a,b) => {
+    if(a.readDate && b.readDate) return new Date(b.readDate) - new Date(a.readDate);
+    if(a.readDate) return -1;
+    if(b.readDate) return 1;
+    return 0;
+  });
+
+  const container = document.getElementById('notesFeedContent');
+  if(notesBooks.length === 0) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📝</div><div class="empty-text">Aún no escribiste notas en ningún libro.</div></div>`;
+  } else {
+    container.innerHTML = notesBooks.map(b => {
+      const {a,t} = parse(b.title);
+      return `<div class="feed-card" onclick="closeNotesFeed(); setTimeout(() => openDetail('${b.id}'), 300)" style="cursor:pointer">
+        <div class="feed-header">
+          ${b.cover ? `<img src="${b.cover}" class="feed-cover">` : `<div class="feed-cover"></div>`}
+          <div class="feed-meta">
+            <div class="feed-title">${esc(t||b.title)}</div>
+            <div class="feed-author">${esc(a)}</div>
+          </div>
+        </div>
+        <div class="feed-text">${esc(b.notes)}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('notesOv').classList.add('open');
+  document.getElementById('notesSh').classList.add('open');
+}
+
+function closeNotesFeed() {
+  document.getElementById('notesOv').classList.remove('open');
+  document.getElementById('notesSh').classList.remove('open');
+}
 
 // ═══ ADD MODAL & MAGIC SEARCH ═══
 let apiTimer, currentApiResults=[], selectedApiBooks=[];
@@ -1177,7 +1261,7 @@ function submitManualAdd(){
 
 async function syncOldBooks() {
   const btn = document.getElementById('syncBtn');
-  const toSync = books.filter(b => !b.cover || !b.pages);
+  const toSync = books.filter(b => !b.cover || !b.pages || b.cat === 'otro');
   if(!toSync.length) { toast('¡Todos tus libros ya están actualizados! ✨'); return; }
   
   btn.textContent = `Sincronizando ${toSync.length} libros... ⏳`;
@@ -1190,12 +1274,16 @@ async function syncOldBooks() {
       const data = await res.json();
       if(data.items && data.items.length > 0) {
         const vi = data.items[0].volumeInfo;
-        if(!b.cover && vi.imageLinks) b.cover = vi.imageLinks.thumbnail.replace('http:','https:');
-        if(!b.pages && vi.pageCount) b.pages = vi.pageCount;
-        updated++;
+        let changed = false;
+        if(!b.cover && vi.imageLinks) { b.cover = vi.imageLinks.thumbnail.replace('http:','https:'); changed = true; }
+        if(!b.pages && vi.pageCount) { b.pages = vi.pageCount; changed = true; }
+        if(b.cat === 'otro' && vi.categories && vi.categories.length > 0) {
+          b.cat = autoCat(vi.categories[0]); changed = true;
+        }
+        if(changed) updated++;
       }
     } catch(e) {}
-    await new Promise(r => setTimeout(r, 200)); // Pausa de cortesía para no saturar a Google
+    await new Promise(r => setTimeout(r, 200)); 
   }
 
   save(); renderAll();
@@ -1227,7 +1315,7 @@ function openDetail(id){
         </div>
       </div>
     </div>
-    ${b.readDate?`<div class="detail-date">✅ Leído el ${formatDate(b.readDate)}</div>`:''}
+    ${b.readDate?`<div class="detail-date" style="display:flex;align-items:center;gap:6px">✅ Leído el <input type="date" value="${b.readDate}" style="background:transparent;border:none;color:var(--ink3);font-family:'Outfit',sans-serif;font-size:12px;outline:none;cursor:pointer" onchange="updateReadDate('${id}',this.value)"></div>`:''}
     ${b.startDate&&!b.read?`<div class="detail-date">📖 Leyendo desde ${formatDate(b.startDate)}</div>`:''}
     <div class="detail-divider"></div>
     <div class="detail-section-title">Rating</div>
@@ -1297,7 +1385,7 @@ function tEnd(e,id){
   if(touchId!==id)return;
   const card=e.currentTarget;
   const dx=e.changedTouches[0].clientX-touchStartX;
-  if(dx<-60){del(id)}
+  if(dx<-100){del(id)}
   else{card.style.transform='';card.classList.remove('swiping')}
   touchId=null;
 }
@@ -1305,11 +1393,12 @@ function tEnd(e,id){
 // ═══ SETTINGS ═══
 function saveGoal(){state.goal=parseInt(document.getElementById('goalIn').value)||20;saveState();if(currentPage==='stats')renderStats()}
 function resetLib(){
-  if(!confirm('¿Reiniciar toda la biblioteca?'))return;
+  if(!confirm('¿Borrar todos tus libros y empezar de cero?'))return;
   localStorage.removeItem('bp3_books');localStorage.removeItem('bp3_state');
-  books=DB.map(b=>({id:gid(),title:b.t,cat:b.c,read:false,rating:0,notes:'',readDate:null,startDate:null}));
-  state={currentlyReading:null,goal:20,sortIdx:0,filter:'all',catFilter:'all'};
-  save();saveState();renderAll();toast('Biblioteca reiniciada');
+  books=DB.map(b=>({id:gid(),title:b.t,cat:b.c,read:false,rating:0,notes:'',readDate:null,startDate:null,wishlist:false,progress:0,pages:0,cover:''}));
+  state={goal:20,sortIdx:0,filter:'all',catFilter:'all',view:'library',listMode:'list'};
+  save();saveState();
+  init();toast('Biblioteca reiniciada 🧹');
 }
 function exportData(){
   const data=JSON.stringify({books,state},null,2);
